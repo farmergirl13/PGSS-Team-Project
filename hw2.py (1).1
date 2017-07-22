@@ -1,0 +1,72 @@
+####################################################
+# 2017 PGSS CS HW2
+####################################################
+
+####################################################
+# 
+# Fill in this section!
+# Author: <YOUR NAME>
+# Collaborated with:
+#   <GROUP MEMBER'S NAME>,
+#   <GROUP MEMBER'S NAME>, 
+#   <GROUP MEMBER'S NAME>
+# (A reminder that there is a 4-person group limit.)
+#
+####################################################
+
+from tkinter import *
+import math
+
+####################################################
+# Helper functions
+####################################################
+
+# Utilize this function below to draw. (It is called for you already.)
+# Hint: You will want to pass in other parameters than the default...
+def getRootAndCanvas(width=300, height=300):
+  root = Tk()
+  canvas = Canvas(root, width=width, height=height)
+  canvas.pack()
+  return (root, canvas)
+
+####################################################
+# drawTiledFlags
+####################################################
+
+def drawTiledFlags(margin, rows, cols, flagWidth, flagHeight):
+  # This code is a gift to you.
+  winWidth = margin*2 + cols*flagWidth
+  winHeight = margin*2 + rows*flagHeight
+  (root, canvas) = getRootAndCanvas(winWidth, winHeight)
+  # Insert your drawing code here
+  # Hint: Helper functions for each flag type are recommended!
+  # ...
+  # Keep this line at the end! It makes your drawing actually display.
+  root.mainloop()
+
+def testDrawTiledFlags():
+  print("Testing drawTiledFlags...")
+  drawTiledFlags(margin=10, rows=3, cols=5, flagWidth=100, flagHeight=60)
+  print("Bye!")
+
+testDrawTiledFlags()
+
+####################################################
+# drawBlankSheetMusic (optional, but recommended)
+####################################################
+
+def drawBlankSheetMusic(title, winWidth, winHeight, lineHeight, lineMargin,
+                        measuresPerLine):
+  (root, canvas) = getRootAndCanvas(winWidth, winHeight)
+  # Insert your drawing code here
+  # ...
+  # Keep this line at the end! It makes your drawing actually display.
+  root.mainloop()
+
+def testDrawBlankSheetMusic():
+  print("Testing drawBlankSheetMusic...")
+  drawBlankSheetMusic(title="Blank sheet music", winWidth=800, winHeight=200,
+    lineHeight=50, lineMargin=20, measuresPerLine=5)
+  print("Bye!")
+
+testDrawBlankSheetMusic()
