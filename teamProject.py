@@ -30,6 +30,7 @@ print(longest_substring(s1, s2))
 
 def removeLongestSubstring(string, substring, position):
     print("It's me!!!")
+    print("Testing Git")
     
 stop = timeit.default_timer()
 print("Run time: ", stop - start)
