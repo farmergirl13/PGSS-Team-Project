@@ -10,4 +10,24 @@ def testThirdSide():
 testThirdSide()
 
 a = [1, 2, 3, 4]
-print(a[1])
+#print(a[1])
+
+
+perm1 = [2, 1, 3]
+perm2 = [3, 2, 1]
+
+for i in perm1:
+    print(i)
+    
+def rearrangePerm(perm1, perm2):
+    finalPerm = []
+    for i in range(len(perm1)):
+        finalPerm.append(0)
+        
+    for i in range(len(perm1)):
+        pos = perm2.index(perm1[i])
+        finalPerm[pos] = i+1
+        
+    return finalPerm
+        
+print(rearrangePerm(perm1, perm2))
