@@ -16,8 +16,6 @@ a = [1, 2, 3, 4]
 perm1 = [2, 1, 3]
 perm2 = [3, 2, 1]
 
-for i in perm1:
-    print(i)
     
 def rearrangePerm(perm1, perm2):
     finalPerm = []
