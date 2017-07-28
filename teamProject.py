@@ -12,8 +12,10 @@ import timeit
 start = timeit.default_timer()
 #-----------------------------
 
-s1 = "ATTGCCTGC"
-s2 = "TGCGCCATT"
+#s1 = "ATTGCCTGC"
+#s2 = "TGCGCCATT"
+s1 = "TAGCCGGCTGGAGCGGAGACGCCAGGGTTTAGCGCCGCGAATTGTAGGCTTATTCGGCAATTTCGGCTACATTGTCAACGCGGTATCTTTTCTTTAGGA"
+s2 = "TAGCAAGGGTGCTCGCTGTAGGAGTAGCGAATCGGCTGCTCGCTGTTGGGCTGCAGCGCCGTCACGCTCTTTAATTTTCATGAATAGGCGGTTCTAATA"
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 #        Step #1 Helper Functions                             #
@@ -73,12 +75,15 @@ def startPosition(cycleList):
     for i in range(len(cycleList)):
         if(cycleList[i][1] < 2):
             #return cycleList[i][0]
-            print("cycleList", cycleList)
+            print("cycleList i value", cycleList[i][1])
+            print("cycleList in startPosition", cycleList)
             print("i= ", i)
             return i
     return -42
             
 def findPosition(cycleList, finalPerm, number, max):
+    print("finalPerm in findPosition", finalPerm)
+    print("max", max)
     if number == 0:
         return 0
     elif number == max:
@@ -88,7 +93,7 @@ def findPosition(cycleList, finalPerm, number, max):
 
 def incrementList(cycleList, number):
     cycleList[number][1] = cycleList[number][1] +1
-    print(cycleList)
+    print("cycleList in incrementList", cycleList)
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 #        Step #3 Helper Functions                             #
@@ -139,6 +144,7 @@ def substringRevision(s1, s2):
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 def transpositionDistance():
     finalPerm = substringRevision(s1, s2)
+    #finalPerm = [3, 6, 2, 1, 7, 8, 9, 5, 4]
     cycleList = cycleCount(finalPerm)
     print(cycleCount(finalPerm))
     cycle = 0
@@ -146,41 +152,46 @@ def transpositionDistance():
     
     #print(startPosition(cycleList))
     startPos = startPosition(cycleList)
-    print(startPos)
+    print("startPos", startPos)
     startNum = cycleList[startPos][0]
-    print(startNum)
+    print("startNum", startNum)
     
+    number = -1 #added this line
     #cycle creator
     while(startPos != -42):
+    #for i in range(0, 3):
         counter = 0
-        number = -1
         while (startNum != number):
             if (counter == 0):
-                number = startNum + 1
+                number = startNum + 1 #value
                 print("number1", number)
-                number = findPosition(cycleList, finalPerm, number, len(cycleList))
+                number = findPosition(cycleList, finalPerm, number, len(cycleList)-1) #position, added -1
                 print("number2", number)
                 incrementList(cycleList, number)
-                number = number - 1
+                number = number - 1 #position
                 print("number3", number)
                 incrementList(cycleList, number)
-                number = cycleList[number][0]
+                number = cycleList[number][0] #value
                 print("number4", number)
                 counter += 1
+                print("counter", counter)
             else: 
-                number = number + 1
+                number = number + 1 #value
                 print("number1", number)
-                number = findPosition(cycleList, finalPerm, number, len(cycleList))
+                number = findPosition(cycleList, finalPerm, number, len(cycleList)-1) #position, added -1
                 print("number2", number)
                 incrementList(cycleList, number)
-                number = number - 1
+                number = number - 1 #position
                 print("number3", number)
                 incrementList(cycleList, number)
-                number = cycleList[number][0]
+                number = cycleList[number][0] #value
                 print("number4", number)
         cycle += 1
         print("cycle",cycle)
         startPos = startPosition(cycleList)
+        print("startPos", startPos)
+        if(startPos != -42):
+            startNum = cycleList[startPos][0] #added this line
         
     print(cycle)
         
