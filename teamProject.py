@@ -64,6 +64,8 @@ def rearrangePerm(perm1, perm2):
 #        Step #2 Helper Functions                             #
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 
+#Creates a new list from the final permutation by adding a 0 and n+1 position, and the 
+#             number of times each number has been used in the cycle
 def cycleCount(finalPerm):
     blockCount = [[0,1]]
     for i in range(len(finalPerm)):
@@ -71,19 +73,15 @@ def cycleCount(finalPerm):
     blockCount += [[len(finalPerm)+1, 1]]
     return blockCount
     
+#Figures out the position where each cycle should start
 def startPosition(cycleList):
     for i in range(len(cycleList)):
         if(cycleList[i][1] < 2):
-            #return cycleList[i][0]
-            print("cycleList i value", cycleList[i][1])
-            print("cycleList in startPosition", cycleList)
-            print("i= ", i)
             return i
     return -42
-            
+
+#Finds the position of a number in the permutation and converts that distance in the cycle list
 def findPosition(cycleList, finalPerm, number, max):
-    print("finalPerm in findPosition", finalPerm)
-    print("max", max)
     if number == 0:
         return 0
     elif number == max:
@@ -91,9 +89,16 @@ def findPosition(cycleList, finalPerm, number, max):
     else:
         return (finalPerm.index(number) + 1)
 
+#Increments the cycle counter for each number in the cycle
 def incrementList(cycleList, number):
-    cycleList[number][1] = cycleList[number][1] +1
-    print("cycleList in incrementList", cycleList)
+    cycleList[number][1] = cycleList[number][1] + 1
+    
+#Calculates the transposition distance from the number of cycles
+def distance(finalPerm, cycles):
+    lowerBound = (len(finalPerm) - cycles)/2
+    upperBound = len(finalPerm) - cycles
+    average = (upperBound + lowerBound)/2
+    return average
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 #        Step #3 Helper Functions                             #
@@ -142,6 +147,7 @@ def substringRevision(s1, s2):
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 #       #2) Permutations and Mathematics                      #
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
+#The main function in step two: the final permutation is ran through a cycle counter to figure out how many cycles it has
 def transpositionDistance():
     finalPerm = substringRevision(s1, s2)
     #finalPerm = [3, 6, 2, 1, 7, 8, 9, 5, 4]
@@ -149,54 +155,56 @@ def transpositionDistance():
     print(cycleCount(finalPerm))
     cycle = 0
     
-    
-    #print(startPosition(cycleList))
+    #Assigns the initial start position and number
     startPos = startPosition(cycleList)
-    print("startPos", startPos)
     startNum = cycleList[startPos][0]
-    print("startNum", startNum)
     
-    number = -1 #added this line
+    number = -1
     #cycle creator
     while(startPos != -42):
     #for i in range(0, 3):
         counter = 0
+        
         while (startNum != number):
-            if (counter == 0):
+            
+            if (counter == 0):#If it is the first time through the cycle, the number has to be the start number plus one
+                #Increments the value of the start number
                 number = startNum + 1 #value
-                print("number1", number)
-                number = findPosition(cycleList, finalPerm, number, len(cycleList)-1) #position, added -1
-                print("number2", number)
+                #Finds the position of that incremented amount
+                number = findPosition(cycleList, finalPerm, number, len(cycleList)-1) #I added the -1 here to fix the code
                 incrementList(cycleList, number)
+                #Moves to the left one position
                 number = number - 1 #position
-                print("number3", number)
                 incrementList(cycleList, number)
+                #Gets the value of that position
                 number = cycleList[number][0] #value
-                print("number4", number)
                 counter += 1
-                print("counter", counter)
-            else: 
+                
+            else: #If it is not the first time through the cycle, the number has to be the number plus one
+                #Increments the value of the start number
                 number = number + 1 #value
-                print("number1", number)
-                number = findPosition(cycleList, finalPerm, number, len(cycleList)-1) #position, added -1
-                print("number2", number)
+                #Finds the position of that incremented amount
+                number = findPosition(cycleList, finalPerm, number, len(cycleList)-1) #I added the -1 here to fix the code
                 incrementList(cycleList, number)
+                #Moves to the left one position
                 number = number - 1 #position
-                print("number3", number)
                 incrementList(cycleList, number)
+                #Gets the value of that position
                 number = cycleList[number][0] #value
-                print("number4", number)
+                
+        #Increments the cycle counter by one
         cycle += 1
-        print("cycle",cycle)
+        #Establishes the start position for the next cycle
         startPos = startPosition(cycleList)
-        print("startPos", startPos)
+        #If every number has been in two cycles, end the loop and stop counting cycles
         if(startPos != -42):
-            startNum = cycleList[startPos][0] #added this line
-        
-    print(cycle)
-        
-        
-    
+            startNum = cycleList[startPos][0]
+     
+    print("Number of cycles is", cycle)
+    #Calculates the transposition distance between the two permutations
+    transDistance = distance(finalPerm, cycle)
+    print("Distance is", transDistance)
+    return transDistance
 
 transpositionDistance()
 
