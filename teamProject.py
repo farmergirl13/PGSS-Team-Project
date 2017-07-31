@@ -12,10 +12,7 @@ import timeit
 start = timeit.default_timer()
 #-----------------------------
 
-#s1 = "ATTGCCTGC"
-#s2 = "TGCGCCATT"
-s1 = "TAGCCGGCTGGAGCGGAGACGCCAGGGTTTAGCGCCGCGAATTGTAGGCTTATTCGGCAATTTCGGCTACATTGTCAACGCGGTATCTTTTCTTTAGGA"
-s2 = "TAGCAAGGGTGCTCGCTGTAGGAGTAGCGAATCGGCTGCTCGCTGTTGGGCTGCAGCGCCGTCACGCTCTTTAATTTTCATGAATAGGCGGTTCTAATA"
+strings = ["TAGCCGGCTGGAGCGGAGACGCCAGGGTTTAGCGCCGCGAATTGTAGGCTTATTCGGCAATTTCGGCTACATTGTCAACGCGGTATCTTTTCTTTAGGA",    "TCTGAGCAGTAGAGGGTGCCGGAGGCTCTTTTAGCGCCGCTGAGTTGTTACACGTCGCGGTTGCCGCCATGAATTGTCTGGGCAATAGTTCATATAATC", "TAGCAGTAGAGGGTTTAGCGCGCGAATTACGCCGGGCAAGTAGTTCATTCCCTTACTGTGGTCAACGCCGGCTGTTCTTGACAGGAGTCTTGCTTATGG"]
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 #        Step #1 Helper Functions                             #
@@ -95,15 +92,23 @@ def incrementList(cycleList, number):
     
 #Calculates the transposition distance from the number of cycles
 def distance(finalPerm, cycles):
-    lowerBound = (len(finalPerm) - cycles)/2
-    upperBound = len(finalPerm) - cycles
+    lowerBound = ((len(finalPerm)+1) - cycles)/2
+    upperBound = (len(finalPerm)+1) - cycles
     average = (upperBound + lowerBound)/2
-    return average
+    return average #upperBound seems more correct than average
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 #        Step #3 Helper Functions                             #
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
-
+#Creates an array to store the distances between strings
+def makeDistanceArray(strings):
+    distanceArray = []
+    for row in range(0, len(strings)):
+        tempDistanceArray = []
+        for col in range(0, len(strings)):
+            tempDistanceArray += [0]
+        distanceArray += [tempDistanceArray]
+    return distanceArray
 
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
@@ -118,41 +123,40 @@ def substringRevision(s1, s2):
     while(len(s1) != count):
         #Runs longest substring and returns substring and position in tuple
         substringTuple = longest_substring(s1, s2)
-        print("SubstringTuple = ", substringTuple)
+        #print("SubstringTuple = ", substringTuple)
         
         #Replaces string 1 with a variable for the common substring
         s1 = s1[0:substringTuple[1]] + "X" + s1[(substringTuple[1] + len(substringTuple[0])):len(s1)]
-        print("s1 = ", s1)
+        #print("s1 = ", s1)
         
         #Replaces string 2 with a variable for the common substring
         s2 = s2[0:substringTuple[2]] + "Y" + s2[(substringTuple[2] + len(substringTuple[0])):len(s2)]
-        print("s2 = ", s2)
+       # print("s2 = ", s2)
         
         #Build unordered perm1
         perm1 = (perm1[0: XinString(s1, substringTuple[1])]) + [(count+1)] + (perm1[XinString(s1, substringTuple[1]): len(perm1)])
-        print(perm1)
+        #print(perm1)
         
         #Build unordered perm2
         perm2 = (perm2[0: XinString(s2, substringTuple[2])]) + [(count+1)] + (perm2[XinString(s2, substringTuple[2]): len(perm2)])
-        print(perm2)
+        #print(perm2)
         
+       
         count+=1
         
     return rearrangePerm(perm1, perm2)  
     print(rearrangePerm(perm1, perm2))
 
 
-
-
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 #       #2) Permutations and Mathematics                      #
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 #The main function in step two: the final permutation is ran through a cycle counter to figure out how many cycles it has
-def transpositionDistance():
+def transpositionDistance(s1, s2):
     finalPerm = substringRevision(s1, s2)
-    #finalPerm = [3, 6, 2, 1, 7, 8, 9, 5, 4]
+    #finalPerm = [2, 3, 1]
     cycleList = cycleCount(finalPerm)
-    print(cycleCount(finalPerm))
+    #print(cycleCount(finalPerm))
     cycle = 0
     
     #Assigns the initial start position and number
@@ -206,13 +210,27 @@ def transpositionDistance():
     print("Distance is", transDistance)
     return transDistance
 
-transpositionDistance()
-
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 #       #3) Reconstructing the Phylogenetic Tree              #
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
-
-
+def tree(strings):
+    distanceArray = makeDistanceArray(strings)
+    for row in range(0, len(strings)):
+        for col in range(0, len(strings)-row):
+            distance = transpositionDistance(strings[row], strings[col])
+            print("row", row, "col", col, "distance", distance)
+            distanceArray[row][col] = distance
+            distanceArray[col][row] = distance
+            print("row", row)
+            print("col", col)
+    
+    
+    print(distanceArray)
+    
+#tree(strings)
+    
+print(transpositionDistance(strings[0],strings[1]))
+print(transpositionDistance(strings[1],strings[0]))
 
 #-----------------------------
 stop = timeit.default_timer()
