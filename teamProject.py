@@ -12,7 +12,8 @@ import timeit
 start = timeit.default_timer()
 #-----------------------------
 
-strings = ["TAGCCGGCTGGAGCGGAGACGCCAGGGTTTAGCGCCGCGAATTGTAGGCTTATTCGGCAATTTCGGCTACATTGTCAACGCGGTATCTTTTCTTTAGGA",    "TCTGAGCAGTAGAGGGTGCCGGAGGCTCTTTTAGCGCCGCTGAGTTGTTACACGTCGCGGTTGCCGCCATGAATTGTCTGGGCAATAGTTCATATAATC", "TAGCAGTAGAGGGTTTAGCGCGCGAATTACGCCGGGCAAGTAGTTCATTCCCTTACTGTGGTCAACGCCGGCTGTTCTTGACAGGAGTCTTGCTTATGG"]
+strings = ["TAGCCGGCTGGAGCGGAGACGCCAGGGTTTAGCGCCGCGAATTGTAGGCTTATTCGGCAATTTCGGCTACATTGTCAACGCGGTATCTTTTCTTTAGGA",           "TCTGAGCAGTAGAGGGTGCCGGAGGCTCTTTTAGCGCCGCTGAGTTGTTACACGTCGCGGTTGCCGCCATGAATTGTCTGGGCAATAGTTCATATAATC", "TAGCAGTAGAGGGTTTAGCGCGCGAATTACGCCGGGCAAGTAGTTCATTCCCTTACTGTGGTCAACGCCGGCTGTTCTTGACAGGAGTCTTGCTTATGG", 
+"TAGCAAGGGTGCTCGCTGTAGGAGTAGCGAATCGGCTGCTCGCTGTTGGGCTGCAGCGCCGTCACGCTCTTTAATTTTCATGAATAGGCGGTTCTAATA", "CGGTTCTAGCAGTACAGAGGGTGCCGGCTGCTGGGCTGCCGTCACGCGTTAGCGCCGCGAATTTAATTTCTTGAACGCTGAGTAGCTTTTTAGGTAATA" ]
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 #        Step #1 Helper Functions                             #
@@ -94,8 +95,7 @@ def incrementList(cycleList, number):
 def distance(finalPerm, cycles):
     lowerBound = ((len(finalPerm)+1) - cycles)/2
     upperBound = (len(finalPerm)+1) - cycles
-    average = (upperBound + lowerBound)/2
-    return average #upperBound seems more correct than average
+    return upperBound #upperBound seems more correct than average
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 #        Step #3 Helper Functions                             #
@@ -109,6 +109,22 @@ def makeDistanceArray(strings):
             tempDistanceArray += [0]
         distanceArray += [tempDistanceArray]
     return distanceArray
+    
+#Finds the smallest distance within the distance array
+def findSmallestDistance(distanceArray):
+    minimumDistance = 100000
+    for row in range(0, len(distanceArray)):
+        for col in range(0, len(distanceArray)):
+            if(distanceArray[row][col]<minimumDistance and distanceArray[row][col]!=0):
+                minimumDistance = distanceArray[row][col]
+    return minimumDistance
+    
+def createNewList(oldList):
+    add = []
+    for row in range(len(oldList)-1):
+        for col in range(len(oldList)-1):
+            add += 0
+    
 
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
@@ -143,9 +159,9 @@ def substringRevision(s1, s2):
         
        
         count+=1
-        
+    print("finalPerm", rearrangePerm(perm1, perm2))
     return rearrangePerm(perm1, perm2)  
-    print(rearrangePerm(perm1, perm2))
+   
 
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
@@ -214,23 +230,54 @@ def transpositionDistance(s1, s2):
 #       #3) Reconstructing the Phylogenetic Tree              #
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 def tree(strings):
+    #Creates the distance array by identifying the minimum transposition distance between two strings
     distanceArray = makeDistanceArray(strings)
     for row in range(0, len(strings)):
-        for col in range(0, len(strings)-row):
-            distance = transpositionDistance(strings[row], strings[col])
+        for col in range(0, len(strings)):
+            distance = min(transpositionDistance(strings[row], strings[col]), transpositionDistance(strings[col], strings[row]))
             print("row", row, "col", col, "distance", distance)
             distanceArray[row][col] = distance
             distanceArray[col][row] = distance
             print("row", row)
             print("col", col)
     
-    
+    #Creates the tree array by finding the smallest distance within the distance array
+    treeArray = []
+    newRow = []
+    remaining = []
+    remaining2 = []
+    a = 0
+    b = 0
     print(distanceArray)
+    parent = len(strings)
+    smallestDistance = findSmallestDistance(distanceArray)
+    print(smallestDistance)
+    for row in range(0, len(strings)):
+        for col in range(0, len(strings)):
+            if(distanceArray[row][col] == smallestDistance):
+                addition = [row, parent, smallestDistance, col, parent, smallestDistance]
+                a = row
+                b = col
+    treeArray += addition
+    for i in range(0, len(distanceArray)):
+        newRow += [(distanceArray[a][i] + distanceArray[b][i])*0.5]
+        
+    for row in range(0, len(distanceArray)):
+        remaining = []
+        for col in range(0, len(distanceArray)):
+            if(a != row and b != col and b != row and a != col):
+                remaining += [distanceArray[row][col]]
+        if(a != row and b != col and b != row and a != col):    
+            remaining2 += [remaining]
+            
+    print(remaining2)
+    print(newRow)
+    print(treeArray)
     
-#tree(strings)
+tree(strings)
     
-print(transpositionDistance(strings[0],strings[1]))
-print(transpositionDistance(strings[1],strings[0]))
+#print(transpositionDistance("ATTGCCTGC", "TGCGCCATT"))
+#print(transpositionDistance("TGCGCCATT", "ATTGCCTGC"))
 
 #-----------------------------
 stop = timeit.default_timer()
