@@ -9,12 +9,15 @@
 
 #-----------------------------
 import timeit
+import numpy as np
 start = timeit.default_timer()
 #-----------------------------
 
-strings = ["TAGCCGGCTGGAGCGGAGACGCCAGGGTTTAGCGCCGCGAATTGTAGGCTTATTCGGCAATTTCGGCTACATTGTCAACGCGGTATCTTTTCTTTAGGA",           
-"CGGTTCTAGCAGTACAGAGGGTGCCGGCTGCTGGGCTGCCGTCACGCGTTAGCGCCGCGAATTTAATTTCTTGAACGCTGAGTAGCTTTTTAGGTAATA", "TAGCAGTAGAGGGTTTAGCGCGCGAATTACGCCGGGCAAGTAGTTCATTCCCTTACTGTGGTCAACGCCGGCTGTTCTTGACAGGAGTCTTGCTTATGG", 
-"TAGCAAGGGTGCTCGCTGTAGGAGTAGCGAATCGGCTGCTCGCTGTTGGGCTGCAGCGCCGTCACGCTCTTTAATTTTCATGAATAGGCGGTTCTAATA", "TCTGAGCAGTAGAGGGTGCCGGAGGCTCTTTTAGCGCCGCTGAGTTGTTACACGTCGCGGTTGCCGCCATGAATTGTCTGGGCAATAGTTCATATAATC"]
+strings = ["TAGCCGGCTGGAGCGGAGACGCCAGGGTTTAGCGCCGCGAATTGTAGGCTTATTCGGCAATTTCGGCTACATTGTCAACGCGGTATCTTTTCTTTAGGA",
+"TAGCAGTAGAGGGTTTAGCGCGCGAATTACGCCGGGCAAGTAGTTCATTCCCTTACTGTGGTCAACGCCGGCTGTTCTTGACAGGAGTCTTGCTTATGG",
+"TCTGAGCAGTAGAGGGTGCCGGAGGCTCTTTTAGCGCCGCTGAGTTGTTACACGTCGCGGTTGCCGCCATGAATTGTCTGGGCAATAGTTCATATAATC",
+"TAGCAAGGGTGCTCGCTGTAGGAGTAGCGAATCGGCTGCTCGCTGTTGGGCTGCAGCGCCGTCACGCTCTTTAATTTTCATGAATAGGCGGTTCTAATA",
+"CGGTTCTAGCAGTACAGAGGGTGCCGGCTGCTGGGCTGCCGTCACGCGTTAGCGCCGCGAATTTAATTTCTTGAACGCTGAGTAGCTTTTTAGGTAATA"]
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 #        Step #1 Helper Functions                             #
@@ -235,7 +238,7 @@ def tree(strings):
     for i in range(0, len(strings)):
         positionList += [i]
     print("PositionList", positionList)
-    dict = {"string1":1, "string2":1, "string3":1, "string4":1, "string5":1}
+    dict = {"string0":1, "string1":1, "string2":1, "string3":1, "string4":1}
     #Creates the distance array by identifying the minimum transposition distance between two strings
     distanceArray = makeDistanceArray(strings)
     for row in range(0, len(strings)):
@@ -253,7 +256,7 @@ def tree(strings):
     print("Distance array", distanceArray)
     newNode = len(distanceArray)
     #Creates a new array by calculating the new distances
-    while(len(distanceArray)>2):
+    while(len(distanceArray)>1):
         smallestDistance = findSmallestDistance(distanceArray)
         newRow = []
         remaining = []
@@ -265,16 +268,20 @@ def tree(strings):
         for row in range(0, len(distanceArray[0])):
             for col in range(0, len(distanceArray[0])):
                 if(distanceArray[row][col] == smallestDistance):
-                    addition = [row, newNode, smallestDistance, col, newNode, smallestDistance]
-            
+                    addition = [positionList[row], positionList[col], smallestDistance]
+                    print("addition", addition)
                     a = row
                     b = col
-        #Adds the nodes and distance to the final tree array
-        treeArray += addition
-        positionList.remove(positionList[a])
-        positionList.remove(positionList[b])
-        positionList += [newNode]
-        print("positionList", positionList)
+       
+        stringA = "string" + str(positionList[a])
+        stringB = "string" + str(positionList[b])
+        size1 = dict[stringA]
+        size2 = dict[stringB]
+        
+        newString = "string" + str(newNode)
+        newSize = size1 + size2
+        dict.update({newString: newSize})
+        addition += [newSize]
         
         #Keeps the old distances that do not change
         for row in range(0, len(distanceArray)):
@@ -290,19 +297,28 @@ def tree(strings):
         #Calculates the new distances
         for i in range(0, len(distanceArray[0])):
             if(i != b and i != a):
-                newValue += [((distanceArray[a][i] + distanceArray[b][i])*(1/2))]
+                stringA = "string" + str(positionList[a])
+                stringB = "string" + str(positionList[b])
+                sizeA = dict[stringA]
+                sizeB = dict[stringB]
+                newValue += [((sizeA*distanceArray[a][i] + sizeB*distanceArray[b][i])*(1/(sizeA+sizeB)))]
         newValue += [0]
         newRow += [newValue]
+        
+        #Adds the nodes and distance to the final tree array
+        treeArray += [addition]
+        positionList.remove(positionList[a])
+        positionList.remove(positionList[b])
+        positionList += [newNode]
 
         distanceArray = remaining2   
         distanceArray += newRow
-        print("Mid distance array", distanceArray)
         for row in range(0, len(distanceArray)):
             for col in range(0, len(distanceArray)):
-                print(distanceArray[row][col])
                 if(distanceArray[row][col] == -1):
                     distanceArray[row][col] = distanceArray[col][row]
                 
+        print("dict", dict)
         print("***Tree array***", treeArray)
         print("Distance array after function", distanceArray)
         counter += 1
