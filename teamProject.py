@@ -12,8 +12,9 @@ import timeit
 start = timeit.default_timer()
 #-----------------------------
 
-strings = ["TAGCCGGCTGGAGCGGAGACGCCAGGGTTTAGCGCCGCGAATTGTAGGCTTATTCGGCAATTTCGGCTACATTGTCAACGCGGTATCTTTTCTTTAGGA",           "TCTGAGCAGTAGAGGGTGCCGGAGGCTCTTTTAGCGCCGCTGAGTTGTTACACGTCGCGGTTGCCGCCATGAATTGTCTGGGCAATAGTTCATATAATC", "TAGCAGTAGAGGGTTTAGCGCGCGAATTACGCCGGGCAAGTAGTTCATTCCCTTACTGTGGTCAACGCCGGCTGTTCTTGACAGGAGTCTTGCTTATGG", 
-"TAGCAAGGGTGCTCGCTGTAGGAGTAGCGAATCGGCTGCTCGCTGTTGGGCTGCAGCGCCGTCACGCTCTTTAATTTTCATGAATAGGCGGTTCTAATA", "CGGTTCTAGCAGTACAGAGGGTGCCGGCTGCTGGGCTGCCGTCACGCGTTAGCGCCGCGAATTTAATTTCTTGAACGCTGAGTAGCTTTTTAGGTAATA" ]
+strings = ["TAGCCGGCTGGAGCGGAGACGCCAGGGTTTAGCGCCGCGAATTGTAGGCTTATTCGGCAATTTCGGCTACATTGTCAACGCGGTATCTTTTCTTTAGGA",           
+"CGGTTCTAGCAGTACAGAGGGTGCCGGCTGCTGGGCTGCCGTCACGCGTTAGCGCCGCGAATTTAATTTCTTGAACGCTGAGTAGCTTTTTAGGTAATA", "TAGCAGTAGAGGGTTTAGCGCGCGAATTACGCCGGGCAAGTAGTTCATTCCCTTACTGTGGTCAACGCCGGCTGTTCTTGACAGGAGTCTTGCTTATGG", 
+"TAGCAAGGGTGCTCGCTGTAGGAGTAGCGAATCGGCTGCTCGCTGTTGGGCTGCAGCGCCGTCACGCTCTTTAATTTTCATGAATAGGCGGTTCTAATA", "TCTGAGCAGTAGAGGGTGCCGGAGGCTCTTTTAGCGCCGCTGAGTTGTTACACGTCGCGGTTGCCGCCATGAATTGTCTGGGCAATAGTTCATATAATC"]
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 #        Step #1 Helper Functions                             #
@@ -113,8 +114,9 @@ def makeDistanceArray(strings):
 #Finds the smallest distance within the distance array
 def findSmallestDistance(distanceArray):
     minimumDistance = 100000
+    print("Length of distance array", len(distanceArray))
     for row in range(0, len(distanceArray)):
-        for col in range(0, len(distanceArray)):
+        for col in range(0, len(distanceArray[0])):
             if(distanceArray[row][col]<minimumDistance and distanceArray[row][col]!=0):
                 minimumDistance = distanceArray[row][col]
     return minimumDistance
@@ -243,36 +245,68 @@ def tree(strings):
     
     #Creates the tree array by finding the smallest distance within the distance array
     treeArray = []
-    newRow = []
-    remaining = []
-    remaining2 = []
+    
     a = 0
     b = 0
-    print(distanceArray)
-    parent = len(strings)
-    smallestDistance = findSmallestDistance(distanceArray)
-    print(smallestDistance)
-    for row in range(0, len(strings)):
-        for col in range(0, len(strings)):
-            if(distanceArray[row][col] == smallestDistance):
-                addition = [row, parent, smallestDistance, col, parent, smallestDistance]
-                a = row
-                b = col
-    treeArray += addition
-    for i in range(0, len(distanceArray)):
-        newRow += [(distanceArray[a][i] + distanceArray[b][i])*0.5]
-        
-    for row in range(0, len(distanceArray)):
+    counter = 1
+    print("Distance array", distanceArray)
+    newNode = len(distanceArray)
+    #Creates a new array by calculating the new distances
+    while(len(distanceArray)>2):
+        smallestDistance = findSmallestDistance(distanceArray)
+        newRow = []
         remaining = []
-        for col in range(0, len(distanceArray)):
-            if(a != row and b != col and b != row and a != col):
-                remaining += [distanceArray[row][col]]
-        if(a != row and b != col and b != row and a != col):    
-            remaining2 += [remaining]
-            
-    print(remaining2)
-    print(newRow)
-    print(treeArray)
+        remaining2 = []
+        newValue = []
+        addition = []
+        
+        #Finds the smallest distance in the array
+        for row in range(0, len(distanceArray[0])):
+            for col in range(0, len(distanceArray[0])):
+                if(distanceArray[row][col] == smallestDistance):
+                    addition = [row, newNode, smallestDistance, col, newNode, smallestDistance]
+                    a = row
+                    b = col
+        #Adds the nodes and distance to the final tree array
+        treeArray += addition
+        
+        #Keeps the old distances that do not change
+        for row in range(0, len(distanceArray)):
+            remaining = []
+            for col in range(0, len(distanceArray[0])):
+                if(a != row and b != row and a != col and b != col):
+                    remaining += [distanceArray[row][col]]
+                    
+                    print("Adding to remaining", distanceArray[row][col])
+            remaining += [-1]
+            if(remaining != [-1]):
+                remaining2 += [remaining]
+             
+        #Calculates the new distances
+        for i in range(0, len(distanceArray[0])):
+            if(i != b and i != a):
+                print("a", a, "b", b, "i", i)
+                newValue += [(distanceArray[a][i] + distanceArray[b][i])//2]
+        newValue += [0]
+        newRow += [newValue]
+
+        distanceArray = remaining2   
+        distanceArray += newRow
+        print("Mid distance array", distanceArray)
+        for row in range(0, len(distanceArray)):
+            for col in range(0, len(distanceArray)):
+                print(distanceArray[row][col])
+                if(distanceArray[row][col] == -1):
+                    print("working", distanceArray[row][col])
+                    distanceArray[row][col] = distanceArray[col][row]
+                    print("distanceArray[row][col]", distanceArray[row][col], "distanceArray[col][row]", distanceArray[col][row])
+                
+        print("New row", newRow)
+        print("***Tree array***", treeArray)
+        #distanceArray = remaining2
+        print("Distance array after function", distanceArray)
+        counter += 1
+        newNode += 1
     
 tree(strings)
     
