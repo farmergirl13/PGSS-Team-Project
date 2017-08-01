@@ -251,6 +251,7 @@ def tree(strings):
     counter = 1
     print("Distance array", distanceArray)
     newNode = len(distanceArray)
+    size = []
     #Creates a new array by calculating the new distances
     while(len(distanceArray)>2):
         smallestDistance = findSmallestDistance(distanceArray)
@@ -260,11 +261,17 @@ def tree(strings):
         newValue = []
         addition = []
         
+        for i in range(0, len(strings)):
+            size += [1]
+        
         #Finds the smallest distance in the array
         for row in range(0, len(distanceArray[0])):
             for col in range(0, len(distanceArray[0])):
                 if(distanceArray[row][col] == smallestDistance):
-                    addition = [row, newNode, smallestDistance, col, newNode, smallestDistance]
+                    addition = [row, newNode, smallestDistance, size[row], col, newNode, smallestDistance, size[col]]
+                    print(newNode)
+                    print(size)
+                    size[newNode-1] = size[row] + size[col]
                     a = row
                     b = col
         #Adds the nodes and distance to the final tree array
@@ -286,7 +293,7 @@ def tree(strings):
         for i in range(0, len(distanceArray[0])):
             if(i != b and i != a):
                 print("a", a, "b", b, "i", i)
-                newValue += [(distanceArray[a][i] + distanceArray[b][i])//2]
+                newValue += [((size[a]*distanceArray[a][i] + size[b]*distanceArray[b][i])*(1/(size[a]+size[b])))]
         newValue += [0]
         newRow += [newValue]
 
@@ -303,10 +310,10 @@ def tree(strings):
                 
         print("New row", newRow)
         print("***Tree array***", treeArray)
-        #distanceArray = remaining2
         print("Distance array after function", distanceArray)
         counter += 1
         newNode += 1
+        size += [1]
     
 tree(strings)
     
